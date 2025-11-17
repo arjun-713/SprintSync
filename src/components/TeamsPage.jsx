@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Users, ChevronRight, Search, Bell, User } from 'lucide-react'
+import { Users, ChevronRight, Search, Bell, User, ArrowLeft, Plus } from 'lucide-react'
 import Sidebar from './Sidebar'
+import TaskModal from './TaskModal'
 
 const teamsData = {
   India: {
@@ -38,8 +39,28 @@ const teamsData = {
   }
 }
 
-export default function TeamsPage({ onNavigate, activeNav }) {
+export default function TeamsPage({ onNavigate, activeNav, tasks, setTasks }) {
   const [selectedTeam, setSelectedTeam] = useState(null)
+  const [showTaskModal, setShowTaskModal] = useState(false)
+  const [selectedSubteam, setSelectedSubteam] = useState(null)
+
+  const handleAssignTask = (subteam) => {
+    setSelectedSubteam({ region: selectedTeam, subteam: subteam.name })
+    setShowTaskModal(true)
+  }
+
+  const addTask = (newTask) => {
+    const task = {
+      ...newTask,
+      id: Date.now(),
+      status: 'backlog'
+    }
+    if (setTasks) {
+      setTasks(prevTasks => [...prevTasks, task])
+    }
+    setShowTaskModal(false)
+    setSelectedSubteam(null)
+  }
 
   return (
     <div className="flex h-screen bg-white">
@@ -150,7 +171,7 @@ export default function TeamsPage({ onNavigate, activeNav }) {
                       {subteam.members}
                     </span>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-3 mb-4">
                     <div className="border-t-4 border-black pt-3">
                       <span className="text-xs font-black uppercase block mb-1">Team Lead:</span>
                       <span className="font-bold text-lg">{subteam.lead}</span>
@@ -160,6 +181,13 @@ export default function TeamsPage({ onNavigate, activeNav }) {
                       <span className="font-bold text-lg">{subteam.members} people</span>
                     </div>
                   </div>
+                  <button
+                    onClick={() => handleAssignTask(subteam)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-black text-white border-4 border-black hover:bg-white hover:text-black transition-all font-black uppercase text-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Assign Task
+                  </button>
                 </div>
               ))}
             </div>
@@ -167,6 +195,21 @@ export default function TeamsPage({ onNavigate, activeNav }) {
         )}
         </div>
       </main>
+
+      {/* Task Assignment Modal */}
+      {showTaskModal && selectedSubteam && (
+        <TaskModal 
+          onClose={() => {
+            setShowTaskModal(false)
+            setSelectedSubteam(null)
+          }}
+          onAdd={addTask}
+          prefilledData={{
+            region: selectedSubteam.region,
+            subteam: selectedSubteam.subteam
+          }}
+        />
+      )}
     </div>
   )
 }

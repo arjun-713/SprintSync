@@ -51,6 +51,8 @@ function App() {
         <TeamsPage 
           onNavigate={navigateTo}
           activeNav={activeNav}
+          tasks={tasks}
+          setTasks={setTasks}
         />
       )}
       {currentPage === 'projects' && (

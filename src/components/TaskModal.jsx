@@ -16,11 +16,11 @@ const projectsData = [
   'UI Component Library'
 ]
 
-export default function TaskModal({ onClose, onAdd }) {
+export default function TaskModal({ onClose, onAdd, prefilledData }) {
   const [formData, setFormData] = useState({
     name: '',
-    region: 'US',
-    subteam: 'SDE',
+    region: prefilledData?.region || 'US',
+    subteam: prefilledData?.subteam || 'SDE',
     project: 'Customer Portal Redesign',
     priority: 'Medium',
     hours: 4
